@@ -1,0 +1,40 @@
+pipeline {
+    agent any
+    parameters {
+  choice choices: ['dev', 'stg', 'prod'], description: 'select your env', name: 'env'
+}
+
+    stages {
+        stage('build') {
+            steps {
+                echo 'build war file'
+                build 'build-web-application'
+            }
+        }
+        
+        stage('staging') {
+            steps {
+                echo 'deploy to stg'
+                build 'Deploy-Application-Staging-Environment'
+            }
+            when {
+                expression {
+                    params.env == "stg"
+                }
+}
+        }
+        
+        stage('prod') {
+            steps {
+                echo 'deploy to prod'
+                build 'Deploy-Application-Production-Environment'
+            }
+            when {
+                expression {
+                    params.env == "prod"
+                }
+}
+        
+    }
+    }
+}
